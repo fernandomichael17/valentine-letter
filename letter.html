@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Valentine's Day!</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #ffecf1;
+      margin: 0;
+      overflow: hidden;
+    }
+    
+    .envelope {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background-color: #ff4e6a;
+      border-radius: 10px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 1s;
+    }
+    
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 100px solid #ff6b81;
+      transform-origin: top;
+      transition: transform 0.6s;
+      z-index: 3;
+    }
+    
+    .envelope-content {
+      position: absolute;
+      width: 280px;
+      height: 180px;
+      background: white;
+      top: 10px;
+      left: 10px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 15px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: 1;
+      overflow: hidden;
+    }
+    
+    .heart-symbol {
+      font-size: 60px;
+      color: #ff4e6a;
+      margin-bottom: 10px;
+    }
+    
+    .photo-container {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 10px auto;
+      border: 3px solid #ff4e6a;
+    }
+    
+    .photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .message {
+      font-size: 16px;
+      color: #ff4e6a;
+      margin-top: 10px;
+      font-weight: bold;
+      max-width: 90%;
+      line-height: 1.3;
+    }
+    
+    h2 {
+      margin: 0;
+      padding: 0;
+      font-size: 22px;
+      color: #333;
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <div class="envelope" id="envelope">
+    <div class="envelope-flap" id="flap"></div>
+    <div class="envelope-content" id="content">
+      <div class="heart-symbol">❤️</div>
+      <h2>Happy Valentine's Day!</h2>
+      <div class="photo-container">
+        <img src="/api/placeholder/150/150" alt="Foto Kekasih" id="photo">
+      </div>
+      <p class="message">Kamu adalah cinta dalam hidupku! Selalu bersamamu adalah kebahagiaan terindah.</p>
+    </div>
+  </div>
+
+  <script>
+    const envelope = document.getElementById('envelope');
+    const flap = document.getElementById('flap');
+    const content = document.getElementById('content');
+    
+    // Upload gambar
+    const photoInput = document.createElement('input');
+    photoInput.type = 'file';
+    photoInput.accept = 'image/*';
+    photoInput.style.display = 'none';
+    document.body.appendChild(photoInput);
+    
+    // Handle klik amplop
+    envelope.addEventListener('click', function() {
+      if (!envelope.classList.contains('opened')) {
+        // Buka amplop
+        flap.style.transform = 'rotateX(180deg)';
+        setTimeout(() => {
+          content.style.opacity = '1';
+          createConfetti();
+        }, 600);
+        envelope.classList.add('opened');
+      } else {
+        // Tanya apakah ingin mengubah foto
+        const changePhoto = confirm('Apakah Anda ingin mengubah foto?');
+        if (changePhoto) {
+          photoInput.click();
+        }
+      }
+    });
+    
+    // Handle upload foto
+    photoInput.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          document.getElementById('photo').src = event.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+    
+    // Fungsi untuk membuat confetti
+    function createConfetti() {
+      const colors = ['#ff6b81', '#ff4e6a', '#ffb8c6', '#ffd3da', '#ffa0b4'];
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.top = -10 + 'px';
+          document.body.appendChild(confetti);
+          
+          // Animasi confetti
+          const animationDuration = 3 + Math.random() * 2;
+          confetti.animate([
+            { transform: 'translateY(0) rotate(0)', opacity: 1 },
+            { transform: `translateY(${window.innerHeight}px) rotate(${360 * (Math.random() > 0.5 ? 1 : -1)}deg)`, opacity: 0 }
+          ], {
+            duration: animationDuration * 1000,
+            easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+          }).onfinish = () => confetti.remove();
+        }, i * 50);
+      }
+    }
+  </script>
+</body>
+</html>
